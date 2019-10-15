@@ -2,6 +2,32 @@
 import csv
 import os
 
+def recordVotes(ballot, optionList, optionTally):
+    name = ballot
+    if name not in optionList:
+        optionList.append(name)
+        optionTally[name] = 0
+    optionTally[name] += 1
+
+def calculateVotes(name, count, percentage, tally, total_votes):
+    #For each item in the dictionary, print out the name, vote percentage & vote Total
+    for item in tally:
+        votes = tally[item]
+        calculatedPercentage = (votes/total_votes) * 100
+        results = (f"{item}: {calculatedPercentage:.1f}% ({votes:,})\n")
+
+        #Print Results
+        print(results)
+        txt_file.write(results)
+
+        #Determine item with largest share of the votes
+        if (votes > count) and (calculatedPercentage > percentage):
+            count = votes
+            percentage = calculatedPercentage
+            name = item
+    return name, count, percentage  # Returns a tuple of the largest objects name, vote count, and percentage of total votes
+
+
 #Assign a variable for the file to load
 file_to_load = os.path.join("Resources","election_results.csv")
 #Create filename 
@@ -35,20 +61,12 @@ with open(file_to_load) as election_data:
     
     #Read the header row
     headers = next(file_reader)
-
+    
     for row in file_reader:
         total_votes += 1
-        candidate_name = row[2]
-        if candidate_name not in candidate_options:
-            candidate_options.append(candidate_name)
-            candidate_votes[candidate_name] = 0
-        candidate_votes[candidate_name] += 1
-
-        countyName = row[1]
-        if countyName not in countyList:
-            countyList.append(countyName)
-            countyTally[countyName] = 0
-        countyTally[countyName] += 1
+        #Call recordVotes function to add item to list & record add to total
+        recordVotes(row[2], candidate_options, candidate_votes)   #Candidate Total
+        recordVotes(row[1], countyList, countyTally)             #County Total
 
 #using the open funtion with the "w" mode we will write data to the file
 with open(file_to_save,"w") as txt_file:
@@ -64,48 +82,27 @@ with open(file_to_save,"w") as txt_file:
     countyVoteHeader = "County Votes\n"
     print(countyVoteHeader)
     txt_file.write(countyVoteHeader)
-    for county in countyTally:
-        #For each county in the dictionary, print out the name, vote percentage & vote Total
-        votes = countyTally[county]  
-        vote_percentage = (votes/total_votes) * 100
-        countyResults = (f"{county}: {vote_percentage:.2f}% ({votes:,})\n")
-        
-        #Print Results
-        print(countyResults)
-        txt_file.write(countyResults)
-
-        #Determine county with largest share of the votes
-        if (votes > largestCountyCount) and (vote_percentage > largestCountyCountPercentage):
-            largestCountyCount = votes
-            largestCountyCountPercentage = vote_percentage
-            largestCounty = county
-
+    
+    #calculate & print county statistics
+    largestCounty = calculateVotes(largestCounty, largestCountyCount, largestCountyCountPercentage, countyTally, total_votes)
+    
     #print county with largest vote share
     largestCountySummary = (
         f"\n--------------------------\n"
-        f"Largest County Turnout: {largestCounty}\n"
+        f"Largest County Turnout: {largestCounty[0]}\n"
         f"--------------------------\n")
     print(largestCountySummary)
     txt_file.write(largestCountySummary)
 
-    for candidate in candidate_votes:
-        votes = candidate_votes[candidate]  
-        vote_percentage = (votes/total_votes) * 100
-        candidate_results = (f"{candidate}: {vote_percentage:.2f}% ({votes:,})\n")
-        
-        print(candidate_results)
-        txt_file.write(candidate_results)
-
-        if (votes > winning_count) and (vote_percentage > winning_percentage):
-            winning_count = votes
-            winning_percentage = vote_percentage
-            winning_candidate = candidate
+    #calculate candidate vote totals
+    winner = calculateVotes(winning_candidate, winning_count, winning_percentage, candidate_votes, total_votes)
     
+    #print winner & summary
     winning_candidate_summary = (
         f"--------------------------\n"
-        f"Winner: {winning_candidate}\n"
-        f"Winning Vote Count: {winning_count:,}\n"
-        f"Winning Percentage: {winning_percentage:.2f}%\n"
+        f"Winner: {winner[0]}\n"
+        f"Winning Vote Count: {winner[1]:,}\n"
+        f"Winning Percentage: {winner[2]:.1f}%\n"
         f"--------------------------\n")
     print(winning_candidate_summary)
     txt_file.write(winning_candidate_summary)

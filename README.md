@@ -15,15 +15,33 @@ A Colorado Board of Elections employee has given you the following tasks to comp
 - Software: Python 3.6.1, Visual Studio Code, 1.38.1
 
 ## Summary
-- There were "x" votes cast in the election.
+- There were 369,711 votes cast in the election.
 - The candidates were:
-  - Candidate X
+  - Charles Casper Stockham: 23.0% (85,213)
+  - Diana DeGette: 73.8% (272,892)
+  - Raymon Anthony Doane: 3.1% (11,606)
+
 - The candidate results were:
-  - Candidate X received "x%" of the vote and "y"number of votes
+  - Charles Casper Stockham received 23.0% of the vote and 85,213 total votes
+  - Diana DeGette received 73.8% of the vote and 272,892 total votes
+  - Raymon Anthony Doane received 3.1% of the vote and 11,606 total votes
 - The winner of the election was:
-  - Candidate (x, y, or z), who received "x%" of the vote and "y" number of votes
+  - Candidate Diana DeGette, who received 73.8% of the vote and 272,892 number of votes
 
 ## Challenge Overview
-
+Refactor the code to provide county vote statistics
 
 ## Challenge Summary
+- County Votes
+  - Jefferson county provided 10.5% of the vote and 38,855 total votes
+  - Denver county provided 82.8% of the vote and 306,055 total votes
+  - Arapahoe county provided 6.7% of the vote and 24,801 total votes
+
+The county with the largest turnout was Denver
+
+### Challenge Code structure
+Program logic now uses two functions:
+- *recordVotes* to tally the vote of each ballot
+- *calculateVotes* to record each data item's statistics as well as the largest object.
+
+Logic to record county information has been added
